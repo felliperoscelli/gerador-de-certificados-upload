@@ -1,0 +1,67 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    background-color: #4caf50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+main {
+    width: 90%;
+    max-width: 800px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#imagePreviewContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#imagePreviewCanvas {
+    max-width: 400px;
+    width: 100%; /* Garante que a largura respeite a largura do container */
+    height: auto; /* Mantém a proporção da altura */
+    display: block; /* Centraliza no container */
+    margin: 0 auto; /* Adiciona margens automáticas para centralização */
+}
+
+#certificatesContainer img {
+    border: 1px solid #cccccc;
+    margin-bottom: 10px;
+    max-width: 100%;
+}
+
+#downloadZip {
+    margin-top: 20px;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "certificate-generator",
+  "version": "1.0.0",
+  "description": "Gerador de certificados com download em ZIP",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "jszip": "^3.10.1"
+  },
+  "engines": {
+    "node": "16.x"
+  }
+}

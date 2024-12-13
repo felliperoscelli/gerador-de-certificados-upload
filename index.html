@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Certificados</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Dancing+Script&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Gerador de Certificados</h1>
+    </header>
+    <main>
+        <form id="certificateForm">
+            <h3>Selecione a imagem do certificado</h3>
+            <input type="file" id="modelImage" accept="image/*" required>
+            <div id="imagePreviewContainer">
+                <h3>Prévia da Imagem</h3>
+                <canvas id="imagePreviewCanvas"></canvas>
+            </div>
+            <h3>Fonte e Tamanho</h3>
+            <select id="fontSelector">
+                <option value="Pacifico">Pacifico</option>
+                <option value="Great Vibes">Great Vibes</option>
+                <option value="Dancing Script">Dancing Script</option>
+                <option value="Satisfy">Satisfy</option>
+                <option value="Allura">Allura</option>
+            </select>
+            <input type="number" id="fontSizeSelector" value="40" min="10" max="100">
+            <h3>Lista de Nomes</h3>
+            <textarea id="namesList" placeholder="Insira os nomes (um por linha)" required></textarea>
+          <br> 
+          <button type="submit">Gerar Certificados</button>
+        </form>
+        <button id="downloadZip">Baixar Todos os Certificados</button>
+        <div id="certificatesContainer"></div>
+    </main>
+</body>
+</html>

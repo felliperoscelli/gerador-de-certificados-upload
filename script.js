@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Adiciona a prévia do nome
             ctx.font = `${selectedFontSize}px ${selectedFont}`;
-            ctx.fillStyle = "black";
+            ctx.fillStyle = "white";
             ctx.textAlign = "center";
             ctx.fillText("Exemplo do Nome", imagePreviewCanvas.width / 2, imagePreviewCanvas.height / 2);
         };

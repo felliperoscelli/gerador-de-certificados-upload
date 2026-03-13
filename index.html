@@ -1,43 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Certificados</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Dancing+Script&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script defer src="script.js"></script>
+<meta charset="UTF-8">
+<title>Gerador de Certificados</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+body{
+font-family:Arial;
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+#certificatesContainer img{
+margin-top:20px;
+border:1px solid #ccc;
+}
+
+textarea{
+width:100%;
+height:120px;
+}
+
+button{
+margin-top:10px;
+padding:10px;
+}
+</style>
 </head>
+
 <body>
-    <header>
-        <h1>Gerador de Certificados</h1>
-    </header>
-    <main>
-        <form id="certificateForm">
-            <h3>Selecione a imagem do certificado</h3>
-            <input type="file" id="modelImage" accept="image/*" required>
-            <div id="imagePreviewContainer">
-                <h3>Prévia da Imagem</h3>
-                <canvas id="imagePreviewCanvas"></canvas>
-            </div>
-            <h3>Fonte e Tamanho</h3>
-            <select id="fontSelector">
-                <option value="Pacifico">Pacifico</option>
-                <option value="Great Vibes">Great Vibes</option>
-                <option value="Dancing Script">Dancing Script</option>
-                <option value="Satisfy">Satisfy</option>
-                <option value="Allura">Allura</option>
-            </select>
-            <input type="number" id="fontSizeSelector" value="40" min="10" max="100">
-            <h3>Lista de Nomes</h3>
-            <textarea id="namesList" placeholder="Insira os nomes (um por linha)" required></textarea>
-          <br> 
-          <button type="submit">Gerar Certificados</button>
-        </form>
-        <button id="downloadZip">Baixar Todos os Certificados</button>
-        <div id="certificatesContainer"></div>
-    </main>
+
+<h2>Gerador de Certificados</h2>
+
+<form id="certificateForm">
+
+<label>Imagem do Certificado</label>
+<br>
+<input type="file" id="modelImage" accept="image/*" required>
+
+<br><br>
+
+<img id="imagePreview" style="width:100%;max-width:700px">
+
+<br><br>
+
+<label>Fonte</label>
+<select id="fontSelector">
+<option value="Times New Roman">Times New Roman</option>
+<option value="Arial">Arial</option>
+<option value="Georgia">Georgia</option>
+<option value="Verdana">Verdana</option>
+</select>
+
+<br><br>
+
+<label>Tamanho base da fonte</label>
+<input type="number" id="fontSizeSelector" value="80">
+
+<br><br>
+
+<div id="fontPreview">
+Exemplo do Nome
+</div>
+
+<br>
+
+<label>Lista de nomes (1 por linha)</label>
+<textarea id="namesList"></textarea>
+
+<br>
+
+<button type="submit">Gerar certificados</button>
+
+</form>
+
+<br>
+
+<button id="downloadSinglePDF">
+Baixar PDF individual
+</button>
+
+<button id="downloadAllPDFs">
+Baixar TODOS em PDF (ZIP)
+</button>
+
+<h3>Certificados gerados</h3>
+
+<div id="certificatesContainer"></div>
+
+<script src="script.js"></script>
+
 </body>
 </html>

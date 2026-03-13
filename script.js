@@ -1,131 +1,293 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const modelImage = document.getElementById("modelImage");
-    const fontSelector = document.getElementById("fontSelector");
-    const fontSizeSelector = document.getElementById("fontSizeSelector");
-    const imagePreviewCanvas = document.getElementById("imagePreviewCanvas");
-    const ctx = imagePreviewCanvas.getContext("2d");
+let selectedFont = "Times New Roman"
+let selectedFontSize = 80
 
-    let modelImageSrc = "";
-    let selectedFont = fontSelector.value;
-    let selectedFontSize = parseInt(fontSizeSelector.value, 10);
+// preview da imagem
+function displayImagePreview(input){
 
-    // Atualizar a prévia da fonte no canvas
-    function updateFontPreview() {
-        if (!modelImageSrc) return; // Não redesenhar se não houver imagem
-        const img = new Image();
-        img.onload = () => {
-            // Redimensiona o canvas
-            imagePreviewCanvas.width = 800;
-            imagePreviewCanvas.height = 600;
+const file = input.files[0]
 
-            // Desenha a imagem do certificado
-            ctx.clearRect(0, 0, imagePreviewCanvas.width, imagePreviewCanvas.height);
-            ctx.drawImage(img, 0, 0, imagePreviewCanvas.width, imagePreviewCanvas.height);
+if(file){
 
-            // Adiciona a prévia do nome
-            ctx.font = `${selectedFontSize}px ${selectedFont}`;
-            ctx.fillStyle = "black";
-            ctx.textAlign = "center";
-            ctx.fillText("Exemplo do Nome", imagePreviewCanvas.width / 2, imagePreviewCanvas.height / 2);
-        };
-        img.src = modelImageSrc;
-    }
+const reader = new FileReader()
 
-    // Listener para mudança de fonte
-    fontSelector.addEventListener("change", () => {
-        selectedFont = fontSelector.value;
-        updateFontPreview();
-    });
+reader.onload = function(event){
 
-    // Listener para mudança de tamanho
-    fontSizeSelector.addEventListener("input", () => {
-        selectedFontSize = parseInt(fontSizeSelector.value, 10);
-        updateFontPreview();
-    });
+document.getElementById("imagePreview").src = event.target.result
 
-    // Prévia da imagem do certificado
-    modelImage.addEventListener("change", () => {
-        const file = modelImage.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                modelImageSrc = e.target.result;
-              
-                updateFontPreview();
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    // Evitar recarregamento do formulário
-    certificateForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+}
 
-        if (!modelImageSrc) {
-            alert("Por favor, selecione uma imagem para o certificado.");
-            return;
-        }
+reader.readAsDataURL(file)
 
-        const names = namesList.value.trim().split("\n").filter((name) => name);
-        if (names.length === 0) {
-            alert("Por favor, insira pelo menos um nome.");
-            return;
-        }
+}
 
-        certificatesContainer.innerHTML = ""; // Limpar anteriores
+}
 
-        names.forEach((name) => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const img = new Image();
+document.getElementById("modelImage")
+.addEventListener("change",function(){
 
-            img.onload = () => {
-                canvas.width = 800;
-                canvas.height = 600;
+displayImagePreview(this)
 
-                // Desenhar o modelo do certificado
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+})
 
-                // Adicionar o nome
-                ctx.font = `${selectedFontSize}px ${selectedFont}`;
-                ctx.fillStyle = "black";
-                ctx.textAlign = "center";
-                ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+// ajuste automático da fonte
+function fitText(ctx,text,maxWidth,fontSize,font){
 
-                // Adicionar ao contêiner
-                const certificateImg = document.createElement("img");
-                certificateImg.src = canvas.toDataURL("image/png");
-                certificateImg.alt = `Certificado - ${name}`;
-                certificateImg.style.width = "100%";
-                certificateImg.style.maxWidth = "800px";
-                certificateImg.style.margin = "10px 0";
+ctx.font = fontSize+"px "+font
 
-                certificatesContainer.appendChild(certificateImg);
-            };
+while(ctx.measureText(text).width > maxWidth){
 
-            img.src = modelImageSrc;
-        });
-    });
+fontSize--
 
-    // Baixar todos os certificados em ZIP
-    downloadZip.addEventListener("click", () => {
-        const images = Array.from(certificatesContainer.querySelectorAll("img"));
-        if (images.length === 0) {
-            alert("Nenhum certificado para baixar. Por favor, gere os certificados primeiro.");
-            return;
-        }
+ctx.font = fontSize+"px "+font
 
-        const zip = new JSZip();
+}
 
-        images.forEach((img, index) => {
-            const data = img.src.split(",")[1]; // Apenas a parte base64
-            zip.file(`certificado_${index + 1}.png`, data, { base64: true });
-        });
+return fontSize
 
-        zip.generateAsync({ type: "blob" }).then((content) => {
-            saveAs(content, "certificados.zip");
-        });
-    });
+}
 
-    // Inicializar prévia da fonte
-    updateFontPreview();
-});
+// cria canvas
+async function createCertificateCanvas(modelImage,name){
+
+const img = new Image()
+
+img.src = URL.createObjectURL(modelImage)
+
+await img.decode()
+
+const canvas = document.createElement("canvas")
+
+canvas.width = img.width
+canvas.height = img.height
+
+const ctx = canvas.getContext("2d")
+
+ctx.drawImage(img,0,0)
+
+const maxWidth = canvas.width * 0.70
+
+let fontSize = fitText(
+ctx,
+name,
+maxWidth,
+selectedFontSize,
+selectedFont
+)
+
+ctx.font = fontSize+"px "+selectedFont
+ctx.fillStyle = "black"
+ctx.textAlign = "center"
+
+ctx.fillText(
+name,
+canvas.width/2,
+canvas.height/2
+)
+
+return canvas
+
+}
+
+// gerar certificados na tela
+async function generateCertificates(){
+
+const modelImage = document.getElementById("modelImage").files[0]
+
+const namesList =
+document.getElementById("namesList")
+.value
+.split("\n")
+.map(n=>n.trim())
+.filter(n=>n)
+
+if(!modelImage || namesList.length===0){
+
+alert("Selecione imagem e nomes")
+
+return
+
+}
+
+const container =
+document.getElementById("certificatesContainer")
+
+container.innerHTML=""
+
+for(const name of namesList){
+
+const canvas =
+await createCertificateCanvas(
+modelImage,
+name
+)
+
+const img =
+document.createElement("img")
+
+img.src =
+canvas.toDataURL("image/png")
+
+img.style.width="100%"
+
+img.dataset.name=name
+
+container.appendChild(img)
+
+}
+
+}
+
+document
+.getElementById("certificateForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+generateCertificates()
+
+})
+
+// gerar PDF
+async function generatePDF(name){
+
+const modelImage =
+document.getElementById("modelImage").files[0]
+
+const canvas =
+await createCertificateCanvas(
+modelImage,
+name
+)
+
+const imgData =
+canvas.toDataURL("image/png")
+
+const {jsPDF} = window.jspdf
+
+const pdf =
+new jsPDF({
+
+orientation:"landscape",
+unit:"px",
+format:[canvas.width,canvas.height]
+
+})
+
+pdf.addImage(
+imgData,
+"PNG",
+0,
+0,
+canvas.width,
+canvas.height
+)
+
+return pdf
+
+}
+
+// baixar PDF individual
+document
+.getElementById("downloadSinglePDF")
+.addEventListener("click",async()=>{
+
+const name = prompt(
+"Digite o nome exato do participante:"
+)
+
+if(!name) return
+
+const pdf = await generatePDF(name)
+
+pdf.save(name+".pdf")
+
+})
+
+// baixar todos em zip
+document
+.getElementById("downloadAllPDFs")
+.addEventListener("click",async()=>{
+
+const modelImage =
+document.getElementById("modelImage").files[0]
+
+const namesList =
+document.getElementById("namesList")
+.value
+.split("\n")
+.map(n=>n.trim())
+.filter(n=>n)
+
+if(!modelImage || namesList.length===0){
+
+alert("Adicione nomes primeiro")
+
+return
+
+}
+
+const zip = new JSZip()
+
+for(const name of namesList){
+
+const pdf = await generatePDF(name)
+
+const blob = pdf.output("blob")
+
+zip.file(name+".pdf",blob)
+
+}
+
+const content =
+await zip.generateAsync({type:"blob"})
+
+const link =
+document.createElement("a")
+
+link.href =
+URL.createObjectURL(content)
+
+link.download =
+"certificados.zip"
+
+link.click()
+
+})
+
+// controles de fonte
+function updateFontPreview(){
+
+const preview =
+document.getElementById("fontPreview")
+
+preview.style.fontFamily =
+selectedFont
+
+preview.style.fontSize =
+selectedFontSize+"px"
+
+}
+
+document
+.getElementById("fontSelector")
+.addEventListener("change",function(){
+
+selectedFont=this.value
+
+updateFontPreview()
+
+})
+
+document
+.getElementById("fontSizeSelector")
+.addEventListener("change",function(){
+
+selectedFontSize=
+parseInt(this.value)
+
+updateFontPreview()
+
+})
+
+document
+.addEventListener("DOMContentLoaded",updateFontPreview)

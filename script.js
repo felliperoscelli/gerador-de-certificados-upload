@@ -1,18 +1,18 @@
-let selectedFont = "Times New Roman"
-let selectedFontSize = 80
+let selectedFont="Great Vibes"
+let selectedFontSize=80
 
-// preview da imagem
+// preview imagem
 function displayImagePreview(input){
 
-const file = input.files[0]
+const file=input.files[0]
 
 if(file){
 
-const reader = new FileReader()
+const reader=new FileReader()
 
-reader.onload = function(event){
+reader.onload=function(e){
 
-document.getElementById("imagePreview").src = event.target.result
+document.getElementById("imagePreview").src=e.target.result
 
 }
 
@@ -22,23 +22,25 @@ reader.readAsDataURL(file)
 
 }
 
-document.getElementById("modelImage")
+document
+.getElementById("modelImage")
 .addEventListener("change",function(){
 
 displayImagePreview(this)
 
 })
 
-// ajuste automático da fonte
+
+// ajustar fonte automaticamente
 function fitText(ctx,text,maxWidth,fontSize,font){
 
-ctx.font = fontSize+"px "+font
+ctx.font=fontSize+"px "+font
 
-while(ctx.measureText(text).width > maxWidth){
+while(ctx.measureText(text).width>maxWidth){
 
 fontSize--
 
-ctx.font = fontSize+"px "+font
+ctx.font=fontSize+"px "+font
 
 }
 
@@ -46,27 +48,28 @@ return fontSize
 
 }
 
-// cria canvas
+
+// criar certificado
 async function createCertificateCanvas(modelImage,name){
 
-const img = new Image()
+const img=new Image()
 
-img.src = URL.createObjectURL(modelImage)
+img.src=URL.createObjectURL(modelImage)
 
 await img.decode()
 
-const canvas = document.createElement("canvas")
+const canvas=document.createElement("canvas")
 
-canvas.width = img.width
-canvas.height = img.height
+canvas.width=img.width
+canvas.height=img.height
 
-const ctx = canvas.getContext("2d")
+const ctx=canvas.getContext("2d")
 
 ctx.drawImage(img,0,0)
 
-const maxWidth = canvas.width * 0.70
+const maxWidth=canvas.width*0.7
 
-let fontSize = fitText(
+let fontSize=fitText(
 ctx,
 name,
 maxWidth,
@@ -74,9 +77,9 @@ selectedFontSize,
 selectedFont
 )
 
-ctx.font = fontSize+"px "+selectedFont
-ctx.fillStyle = "black"
-ctx.textAlign = "center"
+ctx.font=fontSize+"px "+selectedFont
+ctx.fillStyle="black"
+ctx.textAlign="center"
 
 ctx.fillText(
 name,
@@ -88,19 +91,21 @@ return canvas
 
 }
 
+
 // gerar certificados na tela
 async function generateCertificates(){
 
-const modelImage = document.getElementById("modelImage").files[0]
+const modelImage=
+document.getElementById("modelImage").files[0]
 
-const namesList =
+const namesList=
 document.getElementById("namesList")
 .value
 .split("\n")
 .map(n=>n.trim())
 .filter(n=>n)
 
-if(!modelImage || namesList.length===0){
+if(!modelImage||namesList.length===0){
 
 alert("Selecione imagem e nomes")
 
@@ -108,28 +113,25 @@ return
 
 }
 
-const container =
+const container=
 document.getElementById("certificatesContainer")
 
 container.innerHTML=""
 
 for(const name of namesList){
 
-const canvas =
+const canvas=
 await createCertificateCanvas(
 modelImage,
 name
 )
 
-const img =
+const img=
 document.createElement("img")
 
-img.src =
-canvas.toDataURL("image/png")
+img.src=canvas.toDataURL("image/png")
 
 img.style.width="100%"
-
-img.dataset.name=name
 
 container.appendChild(img)
 
@@ -147,25 +149,25 @@ generateCertificates()
 
 })
 
-// gerar PDF
+
+// gerar pdf
 async function generatePDF(name){
 
-const modelImage =
+const modelImage=
 document.getElementById("modelImage").files[0]
 
-const canvas =
+const canvas=
 await createCertificateCanvas(
 modelImage,
 name
 )
 
-const imgData =
+const imgData=
 canvas.toDataURL("image/png")
 
-const {jsPDF} = window.jspdf
+const {jsPDF}=window.jspdf
 
-const pdf =
-new jsPDF({
+const pdf=new jsPDF({
 
 orientation:"landscape",
 unit:"px",
@@ -186,39 +188,23 @@ return pdf
 
 }
 
-// baixar PDF individual
-document
-.getElementById("downloadSinglePDF")
-.addEventListener("click",async()=>{
 
-const name = prompt(
-"Digite o nome exato do participante:"
-)
-
-if(!name) return
-
-const pdf = await generatePDF(name)
-
-pdf.save(name+".pdf")
-
-})
-
-// baixar todos em zip
+// baixar todos
 document
 .getElementById("downloadAllPDFs")
 .addEventListener("click",async()=>{
 
-const modelImage =
+const modelImage=
 document.getElementById("modelImage").files[0]
 
-const namesList =
+const namesList=
 document.getElementById("namesList")
 .value
 .split("\n")
 .map(n=>n.trim())
 .filter(n=>n)
 
-if(!modelImage || namesList.length===0){
+if(!modelImage||namesList.length===0){
 
 alert("Adicione nomes primeiro")
 
@@ -226,45 +212,40 @@ return
 
 }
 
-const zip = new JSZip()
+const zip=new JSZip()
 
 for(const name of namesList){
 
-const pdf = await generatePDF(name)
+const pdf=await generatePDF(name)
 
-const blob = pdf.output("blob")
+const blob=pdf.output("blob")
 
 zip.file(name+".pdf",blob)
 
 }
 
-const content =
+const content=
 await zip.generateAsync({type:"blob"})
 
-const link =
-document.createElement("a")
+const link=document.createElement("a")
 
-link.href =
-URL.createObjectURL(content)
+link.href=URL.createObjectURL(content)
 
-link.download =
-"certificados.zip"
+link.download="certificados.zip"
 
 link.click()
 
 })
 
-// controles de fonte
+
+// preview fonte
 function updateFontPreview(){
 
-const preview =
+const preview=
 document.getElementById("fontPreview")
 
-preview.style.fontFamily =
-selectedFont
-
-preview.style.fontSize =
-selectedFontSize+"px"
+preview.style.fontFamily=selectedFont
+preview.style.fontSize=selectedFontSize+"px"
 
 }
 
@@ -282,8 +263,7 @@ document
 .getElementById("fontSizeSelector")
 .addEventListener("change",function(){
 
-selectedFontSize=
-parseInt(this.value)
+selectedFontSize=parseInt(this.value)
 
 updateFontPreview()
 
